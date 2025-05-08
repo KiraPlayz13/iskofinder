@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - Scholarship Finder (Fixed)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #1e40af 0%, #f0f4f8 40%);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            color: white;
+        }
+        .page-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 0;
+            padding-top: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 300px;
+            text-align: center;
+            color: black;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .login-container h2 {
+            margin-bottom: 1rem;
+            color: black;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            border: none;
+            background-color: #2563eb;
+            color: white;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #1e40af;
+        }
+        .guest-btn {
+            background-color: #6c757d;
+            margin-top: 0.5rem;
+        }
+        .guest-btn:hover {
+            background-color: #5a6268;
+        }
+        .error-message {
+            color: #ffb3b3;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        .toggle-link {
+            margin-top: 1rem;
+            color: #2563eb;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+        }
+        /* Added styles to prevent modals from blocking clicks when hidden */
+        #forgotPasswordModal, #confirmationModal, #bannedModal {
+            pointer-events: none;
+        }
+        #forgotPasswordModal[style*="display: flex"], #confirmationModal[style*="display: flex"], #bannedModal[style*="display: flex"] {
+            pointer-events: auto;
+        }
+        /* Confirmation modal styles */
+        #confirmationModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        #confirmationModal .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            color: black;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        /* Fix for forgot password modal text color */
+        #forgotPasswordModal div {
+            color: black !important;
+        }
+        #confirmationModal button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        #confirmationModal button:hover {
+            background-color: #1e40af;
+        }
+        /* Banned modal styles */
+        #bannedModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 4000;
+        }
+        #bannedModal .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            color: black;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        #bannedModal button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: #d64545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        #bannedModal button:hover {
+            background-color: #b03a3a;
+        }
+        footer {
+            background-color: #1e40af;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: auto;
+        }
+        footer nav a {
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="page-content">
+        <img src="../Images/IskolarFindr Logo.png" alt="IskolarFindr Logo" style="width: 150px; margin-bottom: 1rem;" />
+        <div class="login-container" id="loginContainer">
+            <h2 id="formTitle">Login</h2>
+            <div style="display: flex; align-items: center; width: 100%; margin-bottom: 0.5rem;">
+                <label for="username" style="width: 30%; margin-right: 0.5rem; text-align: right; font-size: 0.85rem; color: #666;">Username:</label>
+                <input type="text" id="username" placeholder="Username" required style="flex: 1;" />
+            </div>
+            <div style="display: flex; align-items: center; width: 100%; margin-bottom: 0.5rem;">
+                <label for="password" style="width: 30%; margin-right: 0.5rem; text-align: right; font-size: 0.85rem; color: #666;">Password:</label>
+                <div style="flex: 1; display: flex; align-items: center;">
+                    <input type="password" id="password" placeholder="Password" required style="flex: 1;" />
+                    <span id="togglePassword" style="cursor:pointer; user-select:none; color:#2563eb; font-size:0.9rem; margin-left: 8px;">Show</span>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; width: 100%; margin-bottom: 0.5rem; display:none;" id="confirmPasswordContainer">
+                <label for="confirmPassword" style="width: 30%; margin-right: 0.5rem; text-align: right; font-size: 0.85rem; color: #666;">Confirm Password:</label>
+                <div style="flex: 1; display: flex; align-items: center;">
+                    <input type="password" id="confirmPassword" placeholder="Confirm Password" required style="flex: 1;" />
+                    <span id="toggleConfirmPassword" style="cursor:pointer; user-select:none; color:#2563eb; font-size:0.9rem; margin-left: 8px;">Show</span>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; width: 100%; margin-bottom: 0.5rem; display:none;" id="locationContainer">
+                <label for="location" style="width: 30%; margin-right: 0.5rem; text-align: right; font-size: 0.85rem; color: #666;">Location:</label>
+                <input type="text" id="location" placeholder="Location" required style="flex: 1;" />
+            </div>
+            <div style="display: flex; align-items: center; width: 100%; margin-bottom: 0.5rem; display:none;" id="emailContainer">
+                <label for="email" style="width: 30%; margin-right: 0.5rem; text-align: right; font-size: 0.85rem; color: #666;">Email:</label>
+                <input type="email" id="email" placeholder="Email" required style="flex: 1;" />
+            </div>
+            <button id="submitBtn">Login</button>
+            <button id="guestBtn" class="guest-btn">Continue as Guest</button>
+            <div id="errorMessage" class="error-message">Invalid credentials</div>
+            <div class="toggle-link" id="toggleForm">Create an account</div>
+            <div class="toggle-link" id="forgotPasswordLink" style="margin-top: 0.5rem;">Forgot Password?</div>
+        </div>
+    </div>
+
+    <!-- Terms and Conditions Modal -->
+    <div id="termsModal" style="display:none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;">
+        <div style="background-color: white; padding: 2rem; border-radius: 8px; max-width: 600px; width: 90vw; max-height: 80vh; overflow-y: auto; color: black; box-shadow: 0 2px 10px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center;">
+            <h2 style="margin-top: 0;">Terms and Conditions</h2>
+            <div style="line-height: 1.5; margin-bottom: 1rem;">
+                <p>Welcome to Scholarship Finder. By using our website, you agree to comply with and be bound by the following terms and conditions.</p>
+                <p>Use of the site is at your own risk. We do not guarantee the accuracy or completeness of the scholarship information provided.</p>
+                <p>We reserve the right to update these terms at any time without prior notice.</p>
+                <p>For more information, please contact us through the Contact page.</p>
+            </div>
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; cursor: pointer; justify-content: center; width: 100%;">
+                <input type="checkbox" id="modalAgreeTerms" style="width: 18px; height: 18px;" />
+                <span>I agree to the Terms and Conditions</span>
+            </label>
+            <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; width: 100%;">
+                <button id="modalConfirmBtn" style="background-color: #2563eb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600;">Confirm</button>
+                <button id="modalCancelBtn" style="background-color: #6c757d; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" style="display:none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 3000;">
+        <div class="modal-content">
+            <p>Registration successful!</p>
+            <p>You can now log in.</p>
+            <button id="confirmationCloseBtn">Close</button>
+        </div>
+    </div>
+
+        <!-- Forgot Password Modal -->
+        <div id="forgotPasswordModal" style="display:none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 3000;">
+            <div style="background: white; padding: 2rem; border-radius: 8px; width: 300px; text-align: center; position: relative;">
+                <button id="forgotCloseBtn" aria-label="Close" title="Close" style="position: absolute; top: 8px; right: 8px; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: #333;">&times;</button>
+                <h3>Reset Password</h3>
+                <input type="text" id="forgotUsername" placeholder="Enter your username" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;" />
+                <button id="forgotSubmitBtn" style="width: 100%; padding: 0.5rem; background-color: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;">Submit</button>
+                <button id="forgotCancelBtn" style="width: 100%; padding: 0.5rem; margin-top: 0.5rem; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+                <div id="forgotMessage" style="margin-top: 1rem; color: red;"></div>
+            </div>
+        </div>
+
+    <!-- Banned User Modal -->
+    <div id="bannedModal" style="display:none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 4000;">
+        <div class="modal-content">
+            <p>Your account has been banned. You cannot log in.</p>
+            <button id="bannedCloseBtn">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const loginContainer = document.getElementById('loginContainer');
+        const formTitle = document.getElementById('formTitle');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const submitBtn = document.getElementById('submitBtn');
+        const guestBtn = document.getElementById('guestBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const toggleForm = document.getElementById('toggleForm');
+        const emailInput = document.getElementById('email');
+        const confirmPasswordContainer = document.getElementById('confirmPasswordContainer');
+        const locationInput = document.getElementById('location');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const confirmationCloseBtn = document.getElementById('confirmationCloseBtn');
+        const termsModal = document.getElementById('termsModal');
+        const modalAgreeTerms = document.getElementById('modalAgreeTerms');
+        const modalCancelBtn = document.getElementById('modalCancelBtn');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+        const togglePassword = document.getElementById('togglePassword');
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+        const forgotSubmitBtn = document.getElementById('forgotSubmitBtn');
+        const forgotCancelBtn = document.getElementById('forgotCancelBtn');
+        const forgotMessage = document.getElementById('forgotMessage');
+        const forgotUsernameInput = document.getElementById('forgotUsername');
+
+        let isLogin = true;
+
+        toggleForm.addEventListener('click', () => {
+            isLogin = !isLogin;
+            if (isLogin) {
+                formTitle.textContent = 'Login';
+                submitBtn.textContent = 'Login';
+                confirmPasswordContainer.style.display = 'none';
+                document.getElementById('emailContainer').style.display = 'none';
+                document.getElementById('locationContainer').style.display = 'none';
+                errorMessage.style.display = 'none';
+                toggleForm.textContent = 'Create an account';
+            } else {
+                formTitle.textContent = 'Create Account';
+                submitBtn.textContent = 'Register';
+                confirmPasswordContainer.style.display = 'flex';
+                document.getElementById('emailContainer').style.display = 'flex';
+                document.getElementById('locationContainer').style.display = 'flex';
+                errorMessage.style.display = 'none';
+                toggleForm.textContent = 'Back to Login';
+            }
+            usernameInput.value = '';
+            passwordInput.value = '';
+            confirmPasswordInput.value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('location').value = '';
+        });
+
+        // Add back button for registration form
+        const backButton = document.createElement('button');
+        backButton.textContent = 'Back to Login';
+        backButton.style.position = 'absolute';
+        backButton.style.top = '10px';
+        backButton.style.left = '10px';
+        backButton.style.right = 'auto';
+        backButton.style.transform = 'none';
+        backButton.style.background = 'none';
+        backButton.style.border = 'none';
+        backButton.style.padding = '0';
+        backButton.style.margin = '0 0 1rem 0';
+        backButton.style.color = 'black';
+        backButton.style.fontSize = '0.9rem';
+        backButton.style.textDecoration = 'underline';
+        backButton.style.cursor = 'pointer';
+        backButton.style.display = 'none';
+        backButton.style.textAlign = 'left';
+        backButton.style.width = 'auto';
+
+        backButton.addEventListener('click', () => {
+            isLogin = true;
+            formTitle.textContent = 'Login';
+            submitBtn.textContent = 'Login';
+            confirmPasswordContainer.style.display = 'none';
+            document.getElementById('emailContainer').style.display = 'none';
+            document.getElementById('locationContainer').style.display = 'none';
+            errorMessage.style.display = 'none';
+            toggleForm.textContent = 'Create an account';
+            usernameInput.value = '';
+            passwordInput.value = '';
+            confirmPasswordInput.value = '';
+            emailInput.value = '';
+            locationInput.value = '';
+            backButton.style.display = 'none';
+            toggleForm.style.display = 'block';
+        });
+
+        loginContainer.style.position = 'relative';
+        loginContainer.appendChild(backButton);
+
+        // Show or hide back button based on form state
+        toggleForm.addEventListener('click', () => {
+            if (!isLogin) {
+                backButton.style.display = 'block';
+                toggleForm.style.display = 'none';
+            } else {
+                backButton.style.display = 'none';
+                toggleForm.style.display = 'block';
+            }
+        });
+
+        function submitForm() {
+            submitBtn.click();
+        }
+
+        loginContainer.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                submitForm();
+            }
+        });
+
+        // Ensure terms modal is hidden on page load
+        termsModal.style.display = 'none';
+
+        // Clear checkbox on page load
+        modalAgreeTerms.checked = false;
+
+        // Hide modal if user clicks outside modal content
+        termsModal.addEventListener('click', (e) => {
+            if (e.target === termsModal) {
+                termsModal.style.display = 'none';
+                modalAgreeTerms.checked = false;
+            }
+        });
+
+        // Hide modal on cancel button click
+        modalCancelBtn.addEventListener('click', () => {
+            termsModal.style.display = 'none';
+            modalAgreeTerms.checked = false;
+        });
+
+        // Confirm button click handler
+        modalConfirmBtn.addEventListener('click', async () => {
+            if (!modalAgreeTerms.checked) {
+                alert('You must agree to the Terms and Conditions before registering.');
+                return;
+            }
+            termsModal.style.display = 'none';
+
+            // Proceed with registration after agreement
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const email = emailInput.value.trim();
+            const location = locationInput.value.trim();
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, location })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Registration failed');
+                }
+
+                // Show confirmation modal instead of alert
+                confirmationModal.style.display = 'flex';
+                confirmationModal.setAttribute('aria-hidden', 'false');
+
+            } catch (err) {
+                errorMessage.textContent = err.message;
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        submitBtn.addEventListener('click', async () => {
+            errorMessage.style.display = 'none';
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const confirmPassword = confirmPasswordInput.value.trim();
+            const email = emailInput.value.trim();
+            const location = locationInput.value.trim();
+
+            if (!username || !password || (!isLogin && (!confirmPassword || !email || !location))) {
+                errorMessage.textContent = 'Please fill in all required fields';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (!isLogin && password !== confirmPassword) {
+                errorMessage.textContent = 'Passwords do not match';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (!isLogin && username === password) {
+                errorMessage.textContent = 'Username and password cannot be the same';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (!isLogin) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    errorMessage.textContent = 'Please enter a valid email address';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+            }
+
+            if (isLogin) {
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            errorMessage.textContent = 'Invalid username or password';
+                        } else {
+                            errorMessage.textContent = 'Login failed. Please try again later.';
+                        }
+                        errorMessage.style.display = 'block';
+                        return;
+                    }
+
+                    const data = await response.json();
+                    sessionStorage.setItem('authToken', data.token);
+                    sessionStorage.setItem('username', username);
+                    sessionStorage.setItem('isAdmin', data.isAdmin ? 'true' : 'false');
+
+                    if (data.isBanned) {
+                        showBannedModal();
+                        return;
+                    }
+
+                    if (data.isAdmin) {
+                        window.location.href = `/admin.html?token=${encodeURIComponent(data.token)}`;
+                    } else {
+                        window.location.href = '/scholarship.html';
+                    }
+                } catch (err) {
+                    errorMessage.textContent = 'Network error. Please try again later.';
+                    errorMessage.style.display = 'block';
+                }
+            } else {
+                // Show terms modal only if not already visible
+                if (termsModal.style.display !== 'flex') {
+                    termsModal.style.display = 'flex';
+                }
+            }
+        });
+
+        // Show banned modal function
+        function showBannedModal() {
+            const bannedModal = document.getElementById('bannedModal');
+            bannedModal.style.display = 'flex';
+            bannedModal.setAttribute('aria-hidden', 'false');
+        }
+
+        // Close banned modal button
+        const bannedCloseBtn = document.getElementById('bannedCloseBtn');
+        bannedCloseBtn.addEventListener('click', () => {
+            const bannedModal = document.getElementById('bannedModal');
+            bannedModal.style.display = 'none';
+            bannedModal.setAttribute('aria-hidden', 'true');
+        });
+
+        togglePassword.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                togglePassword.textContent = 'Hide';
+            } else {
+                passwordInput.type = 'password';
+                togglePassword.textContent = 'Show';
+            }
+        });
+
+        toggleConfirmPassword.addEventListener('click', () => {
+            if (confirmPasswordInput.type === 'password') {
+                confirmPasswordInput.type = 'text';
+                toggleConfirmPassword.textContent = 'Hide';
+            } else {
+                confirmPasswordInput.type = 'password';
+                toggleConfirmPassword.textContent = 'Show';
+            }
+        });
+
+        guestBtn.addEventListener('click', () => {
+            sessionStorage.setItem('authToken', '');
+            sessionStorage.setItem('username', 'Guest');
+            sessionStorage.setItem('isAdmin', 'false');
+            window.location.href = 'scholarship.html';
+        });
+
+        forgotPasswordLink.addEventListener('click', () => {
+            forgotMessage.textContent = '';
+            forgotUsernameInput.value = '';
+            forgotPasswordModal.style.display = 'flex';
+        });
+
+        forgotCancelBtn.addEventListener('click', () => {
+            forgotPasswordModal.style.display = 'none';
+        });
+
+        // Add event listener for the new close button on reset password modal
+        const forgotCloseBtn = document.getElementById('forgotCloseBtn');
+        forgotCloseBtn.addEventListener('click', () => {
+            forgotPasswordModal.style.display = 'none';
+        });
+
+        forgotSubmitBtn.addEventListener('click', async () => {
+            const username = forgotUsernameInput.value.trim();
+            forgotMessage.style.color = 'red';
+            forgotMessage.textContent = '';
+
+            if (!username) {
+                forgotMessage.textContent = 'Please enter your username';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    forgotMessage.textContent = data.error || 'Error processing request';
+                    return;
+                }
+
+                forgotMessage.style.color = 'green';
+                forgotMessage.textContent = (data.message || 'Instructions sent') + '. Please check your spam folder or allow some time for the email to arrive.';
+            } catch (error) {
+                forgotMessage.textContent = 'Network error';
+            }
+        });
+
+// Add event listener for confirmation modal close button
+confirmationCloseBtn.addEventListener('click', () => {
+    confirmationModal.style.display = 'none';
+    confirmationModal.setAttribute('aria-hidden', 'true');
+    // Redirect to login panel (reload login page)
+    window.location.href = 'login.html';
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Account - Scholarship Finder</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        body {
+            background: linear-gradient(to bottom, #1e40af 0%, white 100%);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #panelContainer {
+            max-width: 900px;
+            width: 95%;
+            margin: 2rem auto;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-grow: 1;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            #panelContainer {
+                max-width: 100%;
+                width: 95%;
+                margin: 1rem auto;
+                padding: 1rem;
+                border-radius: 4px;
+            }
+            #accountForm > div {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            #accountForm > div > button {
+                width: 100%;
+                margin-top: 0;
+            }
+            #changeProfileImageBtn, #logoutBtn {
+                width: 100%;
+                max-width: none;
+                font-size: 1.1rem;
+                padding: 0.75rem 0;
+            }
+            #profileImageContainer {
+                width: 100px;
+                height: 100px;
+                margin: 1rem auto;
+                font-size: 2.5rem;
+            }
+            input[type="text"], input[type="email"], input[type="password"] {
+                font-size: 1rem;
+                padding: 0.5rem;
+            }
+            button {
+                font-size: 1rem;
+                padding: 0.75rem 1rem;
+            }
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-top: 1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 0.25rem;
+            border: 1px solid #2563eb;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 2rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #1e40af;
+        }
+        footer {
+            background-color: #1e40af;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: auto;
+        }
+        footer nav a {
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        footer nav a:hover {
+            text-decoration: underline;
+        }
+        /* Logout button styles */
+        #logoutBtn {
+            background-color: #b91c1c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: block;
+            margin: 1rem auto;
+            max-width: 200px;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(185, 28, 28, 0.5);
+        }
+        #logoutBtn:hover {
+            background-color: #991b1b;
+            box-shadow: 0 6px 8px rgba(153, 27, 27, 0.7);
+        }
+        /* Save and Cancel buttons container */
+        #accountForm > div {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: nowrap;
+        }
+        #accountForm > div > button {
+            flex: 1;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        <img src="../Images/IskolarFindr Logo.png" alt="IskolarFindr Logo" style="height: 100px; vertical-align: middle;">
+    </h1>
+    <div id="panelContainer" role="main">
+        <a href="/html_files/scholarship.html" id="backButton" style="display: inline-block; margin-bottom: 1rem; color: #2563eb; font-weight: 600; text-decoration: underline; cursor: pointer;">&larr; Back to Scholarships</a>
+        <!-- Removed Account Details heading as per user request -->
+        <div id="welcomeMessage" style="text-align: center; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;"></div>
+        <div id="profileImageContainer" style="width: 120px; height: 120px; border-radius: 50%; background-color: #ccc; margin: 1rem auto; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white; user-select: none; overflow: hidden; position: relative;">
+            <img id="profileImage" src="" alt="Profile Image" style="width: 100%; height: 100%; object-fit: cover; display: none; border-radius: 50%;" />
+            <div id="profileInitialPlaceholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: #666;">&#128100;</div>
+            <input type="file" id="profileImageInput" accept="image/*" style="display: none;" />
+        </div>
+        <button type="button" id="changeProfileImageBtn" title="Change Profile Image" style="display: block; margin: 0 auto 1rem auto; background-color: #2563eb; color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem; font-size: 1rem; font-weight: 600; cursor: pointer;">Change Profile Image</button>
+        <form id="accountForm" aria-label="Account details form">
+            <label for="usernameInput">Username</label>
+            <input type="text" id="usernameInput" name="username" aria-required="true" />
+
+            <label for="emailInput">Email</label>
+            <input type="email" id="emailInput" name="email" aria-required="false" />
+
+            <label for="locationInput">Location</label>
+            <input type="text" id="locationInput" name="location" />
+
+            <label for="currentPasswordInput">Current Password</label>
+            <input type="password" id="currentPasswordInput" name="currentPassword" placeholder="Enter current password" />
+
+            <label for="passwordInput">New Password</label>
+            <input type="password" id="passwordInput" name="password" placeholder="Enter new password" />
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: nowrap;">
+            <button type="submit" style="flex: 1;">Save Changes</button>
+            <button type="button" id="cancelButton" style="flex: 1; background-color: #d64545; color: white; border: none; border-radius: 6px; padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease;">Cancel</button>
+        </div>
+        </form>
+    </div>
+    <button id="logoutBtn" style="background-color: #d64545; color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; margin: 1rem auto; display: block; max-width: 200px;">Logout</button>
+    <footer>
+        <nav aria-label="Footer navigation">
+            <a href="terms.html">Terms and Conditions</a>
+            <a href="about.html">About</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+        <p>&copy; 2024 Scholarship Finder. All rights reserved.</p>
+    </footer>
+    <script>
+        // Load user details from sessionStorage on page load
+        function loadUserDetails() {
+            // Load saved user details from sessionStorage
+            var storedUsername = sessionStorage.getItem('username') || '';
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('emailInput').value = sessionStorage.getItem('email') || '';
+            document.getElementById('locationInput').value = sessionStorage.getItem('location') || '';
+            document.getElementById('passwordInput').value = '';
+            // Set current password input to masked characters if password exists
+            var storedPassword = sessionStorage.getItem('password') || '';
+            document.getElementById('currentPasswordInput').value = storedPassword ? '********' : '';
+
+            // Update welcome message with username or empty if none
+            var welcomeMessage = document.getElementById('welcomeMessage');
+            if (storedUsername) {
+                welcomeMessage.textContent = 'Welcome, ' + storedUsername;
+            } else {
+                welcomeMessage.textContent = '';
+            }
+
+            // Load profile image based on stored username
+            loadProfileImage(storedUsername);
+        }
+
+            // Save user details to sessionStorage
+            document.getElementById('accountForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                var username = document.getElementById('usernameInput').value.trim();
+                var email = document.getElementById('emailInput').value.trim();
+                var location = document.getElementById('locationInput').value.trim();
+                var currentPassword = document.getElementById('currentPasswordInput').value;
+                var newPassword = document.getElementById('passwordInput').value;
+
+            // Removed confirm dialog for profile image overwrite to avoid local host warning
+            // if (username) {
+            //     var existingProfileImage = localStorage.getItem('profileImage_' + username);
+            //     if (existingProfileImage) {
+            //         var confirmOverwrite = confirm('This username already has a profile image. Do you want to overwrite it?');
+            //         if (!confirmOverwrite) {
+            //             return;
+            //         }
+            //     }
+            // }
+
+                // Verify current password before allowing new password change
+                if (newPassword) {
+                    var storedPassword = sessionStorage.getItem('password') || '';
+                    if (currentPassword !== storedPassword) {
+                        alert('Current password is incorrect. Please enter the correct current password to change your password.');
+                        return;
+                    }
+                }
+
+                // Only update sessionStorage if fields are not blank (preserve previous values)
+                if (username !== '') {
+                    sessionStorage.setItem('username', username);
+                }
+            // Allow saving empty email without validation error
+            // Save email even if empty string
+            sessionStorage.setItem('email', email);
+                if (location !== '') {
+                    sessionStorage.setItem('location', location);
+                }
+
+                if (newPassword) {
+                    // For demo purposes, store password in sessionStorage (not secure)
+                    sessionStorage.setItem('password', newPassword);
+                }
+
+            // Show confirmation modal instead of alert
+            showSaveConfirmationModal();
+        });
+
+        // Create and show save confirmation modal
+        function showSaveConfirmationModal() {
+            // Create modal elements if not already present
+            let modal = document.getElementById('saveConfirmationModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'saveConfirmationModal';
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100vw';
+                modal.style.height = '100vh';
+                modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.style.zIndex = '10000';
+
+                const modalContent = document.createElement('div');
+                modalContent.style.backgroundColor = 'white';
+                modalContent.style.padding = '2rem';
+                modalContent.style.borderRadius = '8px';
+                modalContent.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+                modalContent.style.maxWidth = '400px';
+                modalContent.style.textAlign = 'center';
+
+                const message = document.createElement('p');
+                message.textContent = 'Are you sure you want to save the changes?';
+                message.style.marginBottom = '1.5rem';
+
+                const btnContainer = document.createElement('div');
+                btnContainer.style.display = 'flex';
+                btnContainer.style.justifyContent = 'space-around';
+
+                const confirmBtn = document.createElement('button');
+                confirmBtn.textContent = 'Confirm';
+                confirmBtn.style.backgroundColor = '#2563eb';
+                confirmBtn.style.color = 'white';
+                confirmBtn.style.border = 'none';
+                confirmBtn.style.borderRadius = '6px';
+                confirmBtn.style.padding = '0.5rem 1rem';
+                confirmBtn.style.cursor = 'pointer';
+                confirmBtn.style.fontWeight = '600';
+
+                const cancelBtn = document.createElement('button');
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.style.backgroundColor = '#d64545';
+                cancelBtn.style.color = 'white';
+                cancelBtn.style.border = 'none';
+                cancelBtn.style.borderRadius = '6px';
+                cancelBtn.style.padding = '0.5rem 1rem';
+                cancelBtn.style.cursor = 'pointer';
+                cancelBtn.style.fontWeight = '600';
+
+                btnContainer.appendChild(confirmBtn);
+                btnContainer.appendChild(cancelBtn);
+                modalContent.appendChild(message);
+                modalContent.appendChild(btnContainer);
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+
+                confirmBtn.addEventListener('click', () => {
+                    saveAccountDetails();
+                    closeSaveConfirmationModal();
+                    showSaveSuccessModal();
+                });
+
+                cancelBtn.addEventListener('click', () => {
+                    closeSaveConfirmationModal();
+                });
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeSaveConfirmationModal() {
+            const modal = document.getElementById('saveConfirmationModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Save account details to sessionStorage
+        function saveAccountDetails() {
+            var username = document.getElementById('usernameInput').value.trim();
+            var email = document.getElementById('emailInput').value.trim();
+            var location = document.getElementById('locationInput').value.trim();
+            var newPassword = document.getElementById('passwordInput').value;
+
+            if (username !== '') {
+                sessionStorage.setItem('username', username);
+            }
+                // Allow saving empty email without validation error
+                // Save email even if empty string
+                sessionStorage.setItem('email', email);
+            if (location !== '') {
+                sessionStorage.setItem('location', location);
+            }
+            if (newPassword) {
+                sessionStorage.setItem('password', newPassword);
+            }
+            // Removed alert, replaced with modal
+            // alert('Account details saved successfully.');
+        }
+
+        window.addEventListener('load', loadUserDetails);
+
+        // Create and show save success modal
+        function showSaveSuccessModal() {
+            let modal = document.getElementById('saveSuccessModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'saveSuccessModal';
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100vw';
+                modal.style.height = '100vh';
+                modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.style.zIndex = '10001';
+
+                const modalContent = document.createElement('div');
+                modalContent.style.backgroundColor = 'white';
+                modalContent.style.padding = '2rem';
+                modalContent.style.borderRadius = '8px';
+                modalContent.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+                modalContent.style.maxWidth = '400px';
+                modalContent.style.textAlign = 'center';
+
+                const message = document.createElement('p');
+                message.textContent = 'Account details saved successfully.';
+                message.style.marginBottom = '1.5rem';
+
+                const closeBtn = document.createElement('button');
+                closeBtn.textContent = 'Close';
+                closeBtn.style.backgroundColor = '#2563eb';
+                closeBtn.style.color = 'white';
+                closeBtn.style.border = 'none';
+                closeBtn.style.borderRadius = '6px';
+                closeBtn.style.padding = '0.5rem 1rem';
+                closeBtn.style.cursor = 'pointer';
+                closeBtn.style.fontWeight = '600';
+
+                closeBtn.addEventListener('click', () => {
+                    closeSaveSuccessModal();
+                });
+
+                modalContent.appendChild(message);
+                modalContent.appendChild(closeBtn);
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeSaveSuccessModal() {
+            const modal = document.getElementById('saveSuccessModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        document.getElementById('cancelButton').addEventListener('click', function() {
+            // Reset form fields to empty values
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('emailInput').value = '';
+            document.getElementById('locationInput').value = '';
+            document.getElementById('passwordInput').value = '';
+        });
+
+        // Profile image change handling
+        var profileImageInput = document.getElementById('profileImageInput');
+        var profileImage = document.getElementById('profileImage');
+        var profileInitialPlaceholder = document.getElementById('profileInitialPlaceholder');
+        var changeProfileImageBtn = document.getElementById('changeProfileImageBtn');
+
+        function getProfileImageKey(username) {
+            return 'profileImage_' + username;
+        }
+
+        function loadProfileImage(username) {
+            if (!username) {
+                profileImage.src = '';
+                profileImage.style.display = 'none';
+                profileInitialPlaceholder.style.display = 'flex';
+                return;
+            }
+            var savedImage = localStorage.getItem(getProfileImageKey(username));
+            if (savedImage) {
+                profileImage.src = savedImage;
+                profileImage.style.display = 'block';
+                profileInitialPlaceholder.style.display = 'none';
+            } else {
+                profileImage.src = '';
+                profileImage.style.display = 'none';
+                profileInitialPlaceholder.style.display = 'flex';
+            }
+        }
+
+        function saveProfileImage(username, base64Image) {
+            if (!username) return;
+            localStorage.setItem(getProfileImageKey(username), base64Image);
+        }
+
+        changeProfileImageBtn.addEventListener('click', function() {
+            profileImageInput.click();
+        });
+
+        profileImageInput.addEventListener('change', function() {
+            var file = profileImageInput.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var base64Image = e.target.result;
+                    var username = document.getElementById('usernameInput').value.trim();
+                    saveProfileImage(username, base64Image);
+                    loadProfileImage(username);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Logout button functionality
+        var logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                sessionStorage.clear();
+                // Do not clear localStorage to preserve tracked scholarships
+                window.location.href = 'login.html';
+            });
+            // Set initial logout button background to blue and change to red on hover
+            logoutBtn.style.backgroundColor = '#2563eb'; // blue
+            logoutBtn.style.transition = 'background-color 0.3s ease';
+            logoutBtn.addEventListener('mouseenter', function() {
+                logoutBtn.style.backgroundColor = '#b91c1c'; // red
+            });
+            logoutBtn.addEventListener('mouseleave', function() {
+                logoutBtn.style.backgroundColor = '#2563eb'; // blue
+            });
+        }
+    </script>
+</body>
+</html>

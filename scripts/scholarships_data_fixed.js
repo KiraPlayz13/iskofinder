@@ -1,0 +1,388 @@
+const scholarships = [
+    {
+        id: 1,
+        title: "Academic Excellence Scholarship",
+        location: "",
+        description: "Awarded to students with outstanding academic records.",
+        amount: 5000,
+        degree: "undergraduate",
+        deadline: "2023-12-15",
+        requirements: "Must have a GPA of 3.5 or higher.",
+        category: "government"
+    },
+    {
+        id: 2,
+        title: "Aboitiz Foundation Scholarship",
+        location: "",
+        description: "Full tuition, monthly allowance, incentives for academic achievements.",
+        amount: "Full tuition + monthly allowance",
+        contact: "Call (632) 8886 2800 loc 12666, email aboitizfoundation@aboitiz.com",
+        instructions: "Apply through Aboitiz Foundation contact form.",
+        requirements: "At least 88% academic average, proof of achievements.",
+        qualifications: "Academic and extracurricular excellence.",
+        degree: "undergraduate",
+        deadline: "2024-12-31"
+    },
+    {
+        id: 3,
+        title: "Aboitiz Scholarship Program",
+        location: "",
+        description: "Offers scholarships to students in selected universities.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet Aboitiz eligibility criteria.",
+        category: "private"
+    },
+    {
+        id: 4,
+        title: "Ayala Foundation Scholarship",
+        location: "",
+        description: "Offers scholarships to students in various fields of study.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet Ayala Foundation criteria.",
+        category: "private"
+    },
+    {
+        id: 5,
+        title: "CHED Merit Scholarship Program (CMSP)",
+        location: "",
+        description: "CMSP covers tuition and other school fees, book and connectivity allowance, and stipend for living expenses.",
+        amount: "Varies (partial or full scholarship)",
+        contact: "Check the CHED Merit Scholarship guide",
+        instructions: "Apply through CHED Merit Scholarship application process.",
+        requirements: "Average grade of at least 93% for partial, 96% for full scholarship.",
+        qualifications: "High academic performance.",
+        degree: "undergraduate",
+        deadline: "2024-12-31"
+    },
+    {
+        id: 6,
+        title: "Community Service Award",
+        location: "",
+        description: "Recognizes students with significant community involvement.",
+        amount: 2500,
+        degree: "undergraduate",
+        deadline: "2024-01-15",
+        requirements: "Must have at least 50 hours of community service.",
+        category: "government"
+    },
+    {
+        id: 7,
+        title: "DCWD Scholarship",
+        location: "",
+        description: "Provides scholarships to students in various fields of study.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet DCWD eligibility criteria.",
+        category: "private"
+    },
+    {
+        id: 8,
+        title: "DOH Pre-Service Scholarship",
+        location: "",
+        description: "Supports students pursuing nursing degrees.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must be enrolled in a nursing degree program.",
+        category: "other"
+    },
+    {
+        id: 9,
+        title: "DOST Scholarship",
+        location: "",
+        description: "Provides a tuition fee grant of up to ₱40,000 a year and a monthly stipend of ₱8,000 for STEM students.",
+        amount: 40000,
+        degree: "undergraduate",
+        deadline: "2024-05-30",
+        requirements: "Must be enrolled in a DOST-listed program.",
+        category: "government"
+    },
+    {
+        id: 10,
+        title: "DOST-SEI Scholarship",
+        location: "",
+        description: "Tuition fee grant of up to ₱40,000 a year and a monthly stipend of ₱8,000 for STEM students.",
+        amount: "₱40,000 per year tuition + ₱8,000 monthly stipend",
+        contact: "SEI E-scholarship application portal or call 8330 8876, 8330 8826, (921) 526 0814, (927) 886 8816",
+        instructions: "Apply through DOST-SEI E-scholarship portal.",
+        requirements: "STEM students or top 5% non-STEM students.",
+        qualifications: "Academic excellence in STEM.",
+        degree: "undergraduate",
+        deadline: "2024-12-31"
+    },
+    {
+        id: 11,
+        title: "International Student Scholarship",
+        location: "",
+        description: "Supports exceptional international students.",
+        amount: 7500,
+        degree: "undergraduate",
+        deadline: "2023-12-01",
+        requirements: "Must provide proof of international status.",
+        category: "government"
+    },
+    {
+        id: 12,
+        title: "Isokolar ni Juan",
+        location: "",
+        description: "A scholarship program.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet Isokolar ni Juan eligibility criteria.",
+        category: "other"
+    },
+    {
+        id: 13,
+        title: "KCC Foundation Scholarship",
+        location: "",
+        description: "Offers scholarships to students in various fields of study.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet KCC Foundation eligibility criteria.",
+        category: "private"
+    },
+    {
+        id: 14,
+        title: "L.A.N.I. Scholarship Program",
+        location: "",
+        description: "Provides financial assistance to bona fide residents of Taguig City enrolled in any degree or technical-vocational course.",
+        amount: "₱40,000 to ₱50,000",
+        degree: "undergraduate",
+        deadline: "2024-05-30",
+        requirements: "Must be a resident of Taguig for at least 3 years.",
+        category: "government"
+    },
+    {
+        id: 15,
+        title: "LANDBANK Iskolar Program",
+        location: "",
+        description: "Tuition and allowance for children and grandchildren of farmers and fishermen.",
+        amount: "Varies",
+        contact: "Call (632) 8405 7000, email customercare@landbank.com",
+        instructions: "Apply through LANDBANK Iskolar ng LANDBANK program.",
+        requirements: "90% academic average or top 10%, related programs.",
+        qualifications: "Academic excellence and program relevance.",
+        degree: "undergraduate",
+        deadline: "2024-12-31"
+    },
+    {
+        id: 16,
+        title: "Landbank Scholarship",
+        location: "",
+        description: "Offers scholarships to students from various backgrounds.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet Landbank eligibility criteria.",
+        category: "other"
+    },
+    {
+        id: 17,
+        title: "Megaworld Foundation Scholarship",
+        location: "",
+        description: "Provides scholarships to deserving students.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet Megaworld Foundation criteria.",
+        category: "private"
+    },
+    {
+        id: 18,
+        title: "Megaworld Foundation Scholarship",
+        location: "",
+        description: "Full tuition, allowances, and career opportunities after graduation.",
+        amount: "Full tuition + allowances",
+        contact: "Call (632) 8894 6437 to 38, email support@megaworldfoundation.com",
+        instructions: "Apply through Megaworld Foundation contact.",
+        requirements: "At least 85% GPA, top 10% of batch.",
+        qualifications: "Academic excellence.",
+        degree: "undergraduate",
+        deadline: "2024-12-31"
+    },
+    {
+        id: 19,
+        title: "PANASONIC Scholarship",
+        location: "",
+        description: "Provides scholarships to students in various fields of study.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet PANASONIC eligibility criteria.",
+        category: "private"
+    },
+    {
+        id: 20,
+        title: "PhD Dissertation Fellowship",
+        location: "",
+        description: "Funding for final-year PhD candidates.",
+        amount: 15000,
+        degree: "phd",
+        deadline: "2024-02-28",
+        requirements: "Must submit a dissertation proposal.",
+        category: "government"
+    },
+    {
+        id: 21,
+        title: "PHINMA Scholarship",
+        location: "",
+        description: "Offers scholarships to students from various backgrounds.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet PHINMA eligibility criteria.",
+        category: "private"
+    },
+    {
+        id: 22,
+        title: "Security Bank Scholarship",
+        location: "",
+        description: "Supports dependents of Security Bank employees and the employees themselves.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must be a Security Bank employee or dependent.",
+        category: "private"
+    },
+    {
+        id: 23,
+        title: "SM Scholarship",
+        location: "",
+        description: "Provides scholarship opportunities to deserving students.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet SM Scholarship criteria.",
+        category: "private"
+    },
+    {
+        id: 24,
+        title: "SM Foundation Scholarship",
+        location: "",
+        description: "Full tuition, monthly allowance, and part-time job opportunities.",
+        amount: "Full tuition + monthly allowance",
+        contact: "Check application portal or call (632) 8857-0100 loc. 1678",
+        instructions: "Apply through SM Foundation scholarship portal.",
+        requirements: "92% academic average, related program.",
+        qualifications: "Academic excellence.",
+        degree: "undergraduate",
+        deadline: "2024-12-31"
+    },
+    {
+        id: 25,
+        title: "Tertiary Education Subsidy (TES)",
+        location: "",
+        description: "Tuition subsidies for private universities, state universities, or local colleges.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-05-30",
+        requirements: "Must provide proof of enrollment.",
+        category: "government"
+    },
+    {
+        id: 26,
+        title: "Tulong Dunong",
+        location: "",
+        description: "Covers part of the tuition costs of private colleges or universities.",
+        amount: 7500,
+        degree: "undergraduate",
+        deadline: "2024-05-30",
+        requirements: "Must be a resident of Taguig.",
+        category: "government"
+    },
+    {
+        id: 27,
+        title: "OWWA Scholarships for OFW Dependents",
+        location: "",
+        description: "Scholarships for children of OFWs with various programs.",
+        amount: "₱60,000, ₱20,000 per year depending on program",
+        contact: "OWWA website or Hotline 1348",
+        instructions: "Apply through OWWA scholarship programs.",
+        requirements: "Dependent of OFW, meet specific program criteria.",
+        qualifications: "Academic and financial criteria vary.",
+        degree: "undergraduate",
+        deadline: "2024-12-31"
+    },
+    {
+        id: 28,
+        title: "Tulong Dunong",
+        location: "",
+        description: "Covers part of the tuition costs of private colleges or universities.",
+        amount: "₱7,500 per semester or ₱15,000 per year",
+        contact: "Local government units or scholarship offices",
+        instructions: "Submit application to local government units.",
+        requirements: "Family’s annual income must be under ₱400,000.",
+        qualifications: "Financial need.",
+        degree: "undergraduate",
+        deadline: "2024-12-31"
+    },
+    {
+        id: 29,
+        title: "Isokolar ni Juan",
+        location: "",
+        description: "A scholarship program.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet Isokolar ni Juan eligibility criteria.",
+        category: "other"
+    },
+    {
+        id: 30,
+        title: "CHED Medical Scholarship",
+        location: "",
+        description: "Offers scholarships to students pursuing medical degrees.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must be enrolled in a medical degree program.",
+        category: "other"
+    },
+    {
+        id: 31,
+        title: "DOH Pre-Service Scholarship",
+        location: "",
+        description: "Supports students pursuing nursing degrees.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must be enrolled in a nursing degree program.",
+        category: "other"
+    },
+    {
+        id: 32,
+        title: "CHED Tulong Dunong Scholarship",
+        location: "",
+        description: "Targeted towards students with strong academic records and from underprivileged backgrounds.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet CHED Tulong Dunong eligibility criteria.",
+        category: "other"
+    },
+    {
+        id: 33,
+        title: "CHED CoScho Scholarship",
+        location: "",
+        description: "A program for students in specific technical fields.",
+        amount: 0,
+        degree: "undergraduate",
+        deadline: "2024-06-30",
+        requirements: "Must meet CHED CoScho eligibility criteria.",
+        category: "other"
+    }
+];
+
+scholarships.sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
+scholarships.forEach((scholarship, index) => {
+    scholarship.id = index + 1;
+});
+
+export default scholarships;

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Panel - User Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #1e40af 0%, white 100%);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+        }
+        nav {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        nav a {
+            margin: 0 1rem;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        main {
+            flex-grow: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            border: 1px solid black;
+        }
+        th {
+            background-color: #2563eb;
+            color: white;
+            text-align: center;
+            border-bottom: 1px solid black;
+            border-right: 1px solid black;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        th:last-child {
+            border-right: none;
+        }
+        tbody, td {
+            color: black !important;
+            padding: 0.75rem;
+            border: 1px solid black;
+            text-align: left;
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        th.actions-column, td.actions-column {
+            width: 280px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        button {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 6px rgba(29, 78, 216, 0.4);
+            margin: 0 2px;
+        }
+        .btn-delete {
+            background-color: #d64545;
+            color: white;
+        }
+        .btn-delete:hover {
+            background-color: #b03a3a;
+            box-shadow: 0 6px 12px rgba(176, 58, 58, 0.6);
+        }
+        .btn-toggle-admin {
+            background-color: #1d4ed8;
+            color: white;
+        }
+        .btn-toggle-admin:hover {
+            background-color: #1e40af;
+            box-shadow: 0 6px 12px rgba(30, 64, 175, 0.6);
+        }
+        .btn-ban {
+            background-color: #f59e0b;
+            color: white;
+        }
+        .btn-ban:hover {
+            background-color: #b45309;
+            box-shadow: 0 6px 12px rgba(180, 83, 9, 0.6);
+        }
+        /* Pagination controls styling */
+        #paginationControls, #paginationControlsTop {
+            padding: 0.5rem;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        #paginationControls button, #paginationControlsTop button {
+            background-color: #2563eb;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #paginationControls button:hover:not(:disabled), #paginationControlsTop button:hover:not(:disabled) {
+            background-color: #1e40af;
+        }
+        #paginationControls button:disabled, #paginationControlsTop button:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+        /* Logout button style */
+        .logout-btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 1.5rem auto 3rem auto;
+        }
+        .logout-btn:hover {
+            background-color: #d64545;
+            box-shadow: 0 6px 12px rgba(30, 64, 175, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div style="height: 150px; display: flex; justify-content: center; align-items: center;">
+        <img src="../Images/IskolarFindr Logo.png" alt="IskolarFindr Logo" style="width: 130px; height: 130px;" />
+    </div>
+    <main>
+        <h1 style="margin-top: 0.1rem;">Admin Panel - User Management</h1>
+        <div id="welcomeUsername" style="color: white; font-weight: 600; font-size: 1.2rem; text-align: center; margin-bottom: 1rem;"></div>
+        <nav>
+            <a href="/admin.html" style="color:white;">User Management</a>
+            <a href="/scholarship.html" style="color:white;">Scholarship Management</a>
+        </nav>
+        <form id="addUserForm" style="max-width: 400px; margin: 0 auto 2rem auto; background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); color: black;">
+            <div id="formModeText" style="text-align: center; font-weight: 600; margin-bottom: 0.25rem; color: #2563eb;">Create an Account</div>
+            <div id="formModeInstruction" style="text-align: center; font-size: 0.85rem; color: #555; margin-bottom: 1rem; display: none;">
+                When editing, you can leave any field blank to keep the current value unchanged.
+            </div>
+            <label style="display: block; margin-bottom: 0.75rem;">
+                Username:
+                <input type="text" name="username" required style="width: 100%; padding: 0.5rem; margin-top: 0.25rem; border: 1px solid #ccc; border-radius: 4px;" />
+            </label>
+            <label style="display: block; margin-bottom: 0.75rem;">
+                Email:
+                <input type="email" name="email" style="width: 100%; padding: 0.5rem; margin-top: 0.25rem; border: 1px solid #ccc; border-radius: 4px;" />
+            </label>
+            <label style="display: block; margin-bottom: 0.75rem;">
+                Location:
+                <input type="text" name="location" style="width: 100%; padding: 0.5rem; margin-top: 0.25rem; border: 1px solid #ccc; border-radius: 4px;" />
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                Password:
+                <input type="password" name="password" id="passwordInput" required style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" />
+                <input type="checkbox" id="showPasswordCheckbox" />
+                <span>Show</span>
+            </label>
+            <label style="display: none;">
+                New Password (optional):
+                <input type="password" name="new_password" id="newPasswordInput" style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" />
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                Admin:
+                <input type="checkbox" name="is_admin" />
+            </label>
+            <div id="formButtons" style="display: flex; gap: 0.5rem; justify-content: center;">
+                <button type="button" id="addNewUserBtn" style="background-color: #2563eb; color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 8px rgba(37, 99, 235, 0.6); transition: background-color 0.3s ease;">
+                    Add New User
+                </button>
+                <button type="submit" id="addUserBtn" style="background-color: #2563eb; color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 8px rgba(37, 99, 235, 0.6); transition: background-color 0.3s ease; display: none;">
+                    Save
+                </button>
+                <button type="button" id="cancelEditBtn" style="background-color: #d64545; color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 8px rgba(214, 69, 69, 0.6); transition: background-color 0.3s ease; display: none;">
+                    Cancel
+                </button>
+            </div>
+            <div id="message" style="text-align: center; margin-top: 0.5rem;"></div>
+        </form>
+        <div id="accountsPanel" style="background: white; padding: 1rem; border-radius: 6px; max-width: 900px; margin: 0 auto 2rem auto;">
+            <div id="paginationControlsTop" style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;"></div>
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <input type="text" id="userSearchInput" placeholder="Search users..." style="width: 300px; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;" />
+            </div>
+            <table aria-label="User accounts table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Location</th>
+                        <th>Admin</th>
+                        <th>Banned</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- User rows will be populated here -->
+                </tbody>
+            </table>
+            <div id="paginationControls" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem;"></div>
+        </div>
+    </main>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+    <div id="footer-container">
+        <footer style="background-color: #1e40af; color: white; text-align: center; padding: 1rem 0; margin-top: auto;">
+            <nav aria-label="Footer navigation">
+                <a href="html_files/terms.html" style="color: white; margin: 0 1rem; text-decoration: none;">Terms and Conditions</a>
+                <a href="html_files/about.html" style="color: white; margin: 0 1rem; text-decoration: none;">About</a>
+                <a href="html_files/privacy.html" style="color: white; margin: 0 1rem; text-decoration: none;">Privacy Policy</a>
+                <a href="html_files/contact.html" style="color: white; margin: 0 1rem; text-decoration: none;">Contact</a>
+            </nav>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">&copy; 2024 Scholarship Finder. All rights reserved.</p>
+        </footer>
+    </div>
+    <script type="module" src="../admin/admin_accounts.js"></script>
+    <script type="module" src="../admin/admin.js"></script>
+    <script type="module" src="../admin/aaaadmin.js"></script>
+</body>
+</html>
