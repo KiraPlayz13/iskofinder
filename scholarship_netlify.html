@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scholarindi - Scholarships (Netlify)</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        #panelContainer {
+            max-width: 900px;
+            margin: 0 auto 2rem auto;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 1rem;
+        }
+        nav a {
+            color: white;
+            margin: 0 1rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .close-btn {
+            background: #d64545 !important;
+        }
+        #paginationControls, #paginationControlsTop {
+            background: none !important;
+            min-height: 32px;
+            height: 32px;
+            z-index: 20;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            gap: 0.4rem;
+            margin: 0.75rem 0;
+            border: none !important; /* Removed red border */
+        }
+        #paginationControlsTop {
+            margin-bottom: 1.5rem !important; /* Add spacing below top pagination panel */
+        }
+        #resultsContainer {
+            overflow: visible !important;
+            position: relative;
+        }
+        #panelContainer {
+            overflow: visible !important;
+        }
+        .edit-btn {
+            background-color: #2563eb;
+            color: white;
+            border: 2px solid white;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background-color 0.3s ease;
+        }
+        .edit-btn:hover {
+            background-color: #1e40af;
+        }
+        .tracked-scholarship-link {
+            color: #2563eb;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .more-info-btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background-color 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        .more-info-btn:hover {
+            background-color: #1e40af;
+        }
+        .track-btn {
+            background-color: #2563eb;
+            color: white;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background-color 0.3s ease;
+        }
+        .track-btn:hover {
+            background-color: #1e40af;
+        }
+        /* New styles for truncated description */
+        .scholarship-description {
+            white-space: normal;
+            margin-bottom: 0.5rem;
+        }
+        .scholarship-description.expanded {
+            white-space: normal;
+            margin-bottom: 0.5rem;
+        }
+        #detailsModal .modal-content {
+            max-width: 1100px;
+            width: 95vw;
+            max-height: 95vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        .scholarship-card {
+            position: relative;
+            color: #333;
+            padding: 1rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+        }
+        .scholarship-card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow: hidden;
+        }
+        /* Modal content larger */
+        #detailsModal {
+            max-width: 900px;
+            width: 90vw;
+            max-width: min(900px, 90vw);
+            max-height: 90vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin: 0 auto;
+            padding: 2rem 2.5rem 2rem 0; /* add right padding */
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .scholarship-card-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .scholarship-card-buttons {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        #detailsModal .modal-content {
+            position: relative;
+            max-width: 100%;
+            width: 100%;
+            max-height: none;
+            overflow-y: auto;
+            overflow-x: hidden !important;
+            padding-left: 2rem;
+            padding-right: 2.5rem !important; /* extra padding on right for scrollbar */
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+        }
+        #detailsModal .modal-content .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem !important; /* adjusted to be inside padding */
+            z-index: 1100 !important;
+            font-size: 1.5rem;
+            line-height: 1;
+            padding: 0.2rem 0.6rem;
+            cursor: pointer;
+            background-color: #d64545 !important;
+            color: white !important;
+            border-radius: 4px;
+            border: none;
+        }
+        #detailsModal > .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1200;
+            font-size: 1.5rem;
+            line-height: 1;
+            padding: 0.2rem 0.6rem;
+            cursor: pointer;
+            background-color: #d64545;
+            color: white;
+            border-radius: 4px;
+            border: none;
+        }
+        #detailsModal .modal-content p, 
+        #detailsModal .modal-content span, 
+        #detailsModal .modal-content h3 {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+            max-width: 100%;
+        }
+        #detailsModal .modal-content table {
+            max-width: 100%;
+            table-layout: fixed;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+        #detailsModal .modal-content th, #detailsModal .modal-content td {
+            white-space: normal;
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+        /* Table styles for requirements and qualifications */
+        #modalRequirementsTable, #modalQualificationsTable, #modalBenefitsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc; /* Add border to table */
+        }
+        #modalBenefits {
+            display: block;
+            margin-bottom: 1rem;
+        }
+        #modalRequirementsTable th, #modalRequirementsTable td,
+        #modalQualificationsTable th, #modalQualificationsTable td,
+        #modalBenefitsTable th, #modalBenefitsTable td {
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        #modalRequirementsTable th, #modalQualificationsTable th, #modalBenefitsTable th {
+            background-color: #f0f0f0;
+            text-align: justify; /* Justify the header text */
+        }
+        /* Updated pagination button styles to match admin.html */
+        .pagination-btn {
+            background-color: #2563eb;
+            border: none;
+            outline: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.1rem 0.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 0 0.1rem;
+            font-size: 0.7rem;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            background-color: #1e40af;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+            color: white;
+        }
+    </style>
+    <style>
+        /* Responsive styles for mobile */
+        @media (max-width: 600px) {
+            h1 img {
+                height: 60px !important;
+                display: block;
+                margin: 0 auto 1rem auto;
+            }
+            #panelContainer {
+                max-width: 95% !important;
+                padding: 0.5rem !important;
+                margin: 0.5rem auto 1rem auto !important;
+            }
+            #controls > div:first-child {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 0.5rem !important;
+            }
+            #controls #searchContainer {
+                flex-direction: column !important;
+                align-items: stretch !important;
+            }
+            #controls #searchContainer input,
+            #controls #searchContainer button {
+                width: 100% !important;
+                box-sizing: border-box !important;
+                border-radius: 6px !important;
+                margin-bottom: 0.5rem !important;
+            }
+            #resultsContainer, #scholarshipCardsContainer {
+                max-width: 100% !important;
+                padding: 0 0.5rem !important;
+            }
+            #logoutBtn {
+                width: 100% !important;
+                margin: 1rem 0 !important;
+                font-size: 1rem !important;
+                padding: 0.75rem !important;
+                box-sizing: border-box !important;
+            }
+            footer nav {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 0.5rem !important;
+                align-items: center !important;
+            }
+            footer nav a {
+                margin: 0 !important;
+                font-size: 1rem !important;
+            }
+            footer p {
+                font-size: 0.9rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 style="padding-top: 0; padding-bottom: 0;">
+        <img src="../Images/IskolarFindr Logo.png" alt="IskolarFindr Logo" style="height: 100px; vertical-align: middle;">
+    </h1>
+    <nav>
+        <a href="/admin_netlify.html" id="userMgmtLink" style="display:none;">User Management</a>
+        <a href="/scholarship_netlify.html" id="scholarshipMgmtLink" style="display:none;">Scholarship Management</a>
+    </nav>
+    <div id="panelContainer">
+        <div id="controls" aria-label="Search, filter, sort controls">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; color: white; font-weight: 600; font-size: 1.2rem;">
+                    <a href="/html_files/Account.html" id="profileLink" title="Go to Account" style="display: flex; align-items: center; text-decoration: none; color: white;">
+                        <div id="profileIcon" style="width: 32px; height: 32px; background-color: #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1rem; cursor: pointer; user-select: none; overflow: hidden;">
+                            G
+                        </div>
+                    </a>
+                    <div id="usernameDisplay">Guest</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button id="trackedListBtn" style="background-color: #2563eb; color: white; border: 2px solid white; border-radius: 6px; padding: 0.4rem 0.8rem; cursor: pointer; font-weight: 600;">Tracked Scholarships</button>
+                    <nav id="adminPanel" style="display:none; margin-left: 2rem;">
+                        <!-- Removed duplicate admin links from control panel -->
+                    </nav>
+                </div>
+            </div>
+            <div id="searchContainer" style="display: flex; align-items: center; gap: 0; max-width: 100%;">
+                <input type="search" id="searchInput" placeholder="Search scholarships..." aria-label="Search scholarships" style="flex: 1 1 auto; padding: 0.4rem 1rem; font-size: 1rem; border: 1px solid #2563eb; border-right: none; border-radius: 6px 0 0 6px; height: 36px; box-sizing: border-box;" />
+                <button id="searchButton" aria-label="Search scholarships" style="flex: 0 0 auto; font-weight: 600; font-size: 0.85rem; background-color: #2563eb; color: white; border: 2px solid white; border-radius: 6px; padding: 0.4rem 0.8rem; cursor: pointer; box-sizing: border-box;">Search</button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1rem; flex-wrap: nowrap;">
+                <button id="recommendedHeader" style="background-color: white; color: #2563eb; font-weight: 600; border-radius: 6px; border: 1px solid #2563eb; padding: 0.4rem 0.6rem; font-size: 1rem; cursor: pointer; white-space: nowrap; width: 200px; min-width: 200px; box-sizing: border-box;">Recommended for You</button>
+                <select id="filterScholarshipType" aria-label="Filter scholarships by scholarship type" style="font-weight: 600; border-radius: 6px; border: 1px solid #2563eb; padding: 0.4rem 0.6rem; font-size: 1rem; color: #2563eb; background-color: white; cursor: pointer; flex: 1 1 18%; min-width: 120px;">
+                    <option value="">All Types</option>
+                    <option value="full">Full Scholarship</option>
+                    <option value="partial">Partial Scholarship</option>
+                    <option value="stipend">Stipend</option>
+                </select>
+                <select id="filterProvider" aria-label="Filter scholarships by provider" style="font-weight: 600; border-radius: 6px; border: 1px solid #2563eb; padding: 0.4rem 0.6rem; font-size: 1rem; color: #2563eb; background-color: white; cursor: pointer; flex: 1 1 18%; min-width: 120px;">
+                    <option value="">All Providers</option>
+                    <option value="government">Government</option>
+                    <option value="private">Private</option>
+                    <option value="other">Other</option>
+                </select>
+                <select id="sortSelect" aria-label="Sort scholarships" style="font-weight: 600; border: 1px solid #2563eb; padding: 0.4rem 0.6rem; font-size: 1rem; color: #2563eb; background-color: white; cursor: pointer; border-radius: 6px; flex: 1 1 18%; min-width: 120px;">
+                    <option value="title">Title (A-Z)</option>
+                    <option value="amount">Amount (Low to High)</option>
+                    <option value="deadline">Deadline (Earliest First)</option>
+                </select>
+                <div id="clearFiltersContainer" style="flex: 1 1 15%; min-width: 120px;">
+                    <button id="clearFiltersBtn" style="font-weight: 600; border-radius: 6px; border: 1px solid #2563eb; padding: 0.4rem 0.6rem; font-size: 1rem; color: #2563eb; background-color: white; cursor: pointer; width: 100%;">Clear</button>
+                </div>
+            </div>
+        </div>
+        <div id="paginationControlsTop" style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;"></div>
+        <div id="resultsContainer">
+            <div id="scholarshipCardsContainer"><!-- Scholarship cards will be inserted here --></div>
+        </div>
+        <div id="paginationControls" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem;"></div>
+    </div>
+
+    <!-- Modal for tracked scholarships list -->
+    <div id="trackedListModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="trackedListTitle" aria-modal="true">
+        <div class="modal-content" style="max-height: 70vh; overflow-y: auto;">
+            <button class="close-btn" id="closeTrackedListBtn" aria-label="Close tracked list modal">&times;</button>
+            <h3 id="trackedListTitle" style="margin-top: 0; margin-bottom: 1rem; color: #243b53;">Tracked Scholarships</h3>
+            <ul id="trackedScholarshipsList" style="list-style: none; padding: 0; margin: 0; max-height: 60vh; overflow-y: auto;">
+                <!-- Tracked scholarships will be dynamically inserted here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal for scholarship details -->
+    <div id="detailsModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle" aria-modal="true" style="background-image: url('../Images/Scholarships.png'); background-size: cover; background-position: center;">
+        <button class="close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
+        <div class="modal-content">
+            <button id="backToTrackedListBtn" class="modal-back-btn" style="display:none;">&larr;</button>
+            <h3 id="modalTitle"></h3>
+            <p><strong>Instructions:</strong> <span id="modalInstructions"></span></p>
+            <p><strong>Description:</strong> <span id="modalDescription"></span></p>
+            <span id="modalBenefits"></span>
+            <span id="modalRequirements"></span>
+            <span id="modalQualifications"></span>
+            <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+            <p><strong>Contact:</strong> <a href="#" id="modalContact" target="_blank" rel="noopener noreferrer"></a></p>
+        </div>
+    </div>
+
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+
+    <footer style="background-color: #1e40af; color: white; text-align: center; padding: 1rem 0; margin-top: auto;">
+        <nav aria-label="Footer navigation">
+            <a href="html_files/terms.html" style="color: white; margin: 0 1rem; text-decoration: none;">Terms and Conditions</a>
+            <a href="html_files/about.html" style="color: white; margin: 0 1rem; text-decoration: none;">About</a>
+            <a href="html_files/privacy.html" style="color: white; margin: 0 1rem; text-decoration: none;">Privacy Policy</a>
+            <a href="html_files/contact.html" style="color: white; margin: 0 1rem; text-decoration: none;">Contact</a>
+        </nav>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">&copy; 2024 Scholarship Finder. All rights reserved.</p>
+    </footer>
+
+    <script type="module">
+        import scholarships from '../Scholarships_Data/index.js';
+
+        const backendBaseUrl = 'https://your-backend-url.com';
+
+        // New function to check if user is banned or not authenticated
+        async function checkUserBannedStatus() {
+            const token = sessionStorage.getItem('authToken');
+            if (!token) {
+                // No token, allow access as guest (do not block)
+                return;
+            }
+            try {
+                const response = await fetch(backendBaseUrl + '/api/user-info', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user info');
+                }
+        // Check if response body is empty before parsing JSON
+        const text = await response.text();
+        if (!text) {
+            throw new Error('Empty response body');
+        }
+        const userInfo = JSON.parse(text);
+        if (userInfo.isBanned) {
+            alert('Your account has been banned. You will be redirected to the login page.');
+            sessionStorage.clear();
+            window.location.href = 'login_netlify.html';
+        }
+    } catch (error) {
+        console.error('Error checking user banned status:', error);
+        alert('Authentication error. Please log in again.');
+        sessionStorage.clear();
+        window.location.href = 'login_netlify.html';
+    }
+}
+
+        // Call the checkUserBannedStatus function on page load
+        checkUserBannedStatus();
+
+        let scholarshipsData = scholarships;
+        let currentScholarships = [];
+        let currentPage = 1;
+        const scholarshipsPerPage = 12;
+        let isShowingRecommended = false;
+        let recommendedScholarships = [];
+        let trackedScholarships = [];
+
+        // Save tracked scholarships to localStorage per user
+        function saveTrackedScholarships() {
+            const username = sessionStorage.getItem('username') || 'Guest';
+            localStorage.setItem(`trackedScholarships_${username}`, JSON.stringify(trackedScholarships));
+        }
+
+        // Load tracked scholarships from localStorage per user
+        function loadTrackedScholarships() {
+            const username = sessionStorage.getItem('username') || 'Guest';
+            const saved = localStorage.getItem(`trackedScholarships_${username}`);
+            if (saved) {
+                try {
+                    trackedScholarships = JSON.parse(saved);
+                } catch {
+                    trackedScholarships = [];
+                }
+            } else {
+                trackedScholarships = [];
+            }
+        }
+        let editingId = null;
+        let openedFromTrackedList = false;
+
+        const resultsContainer = document.getElementById('resultsContainer');
+        const scholarshipCardsContainer = document.getElementById('scholarshipCardsContainer');
+        const paginationContainer = document.getElementById('paginationControls');
+        const paginationContainerTop = document.getElementById('paginationControlsTop');
+        const searchInput = document.getElementById('searchInput');
+        const filterScholarshipType = document.getElementById('filterScholarshipType');
+        const filterProvider = document.getElementById('filterProvider');
+        const sortSelect = document.getElementById('sortSelect');
+        const recommendedHeaderBtn = document.getElementById('recommendedHeader');
+        const trackedListModal = document.getElementById('trackedListModal');
+        const trackedScholarshipsList = document.getElementById('trackedScholarshipsList');
+        const detailsModal = document.getElementById('detailsModal');
+        const backToTrackedListBtn = document.getElementById('backToTrackedListBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const usernameDisplay = document.getElementById('usernameDisplay');
+        const adminPanel = document.getElementById('adminPanel');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Show username and profile label
+        async function updateUsernameDisplay() {
+            const username = sessionStorage.getItem('username') || 'Guest';
+            const usernameDisplay = document.getElementById('usernameDisplay');
+            if (usernameDisplay) {
+                usernameDisplay.textContent = username;
+            }
+            // Update profile icon with image or initial
+            const profileIcon = document.getElementById('profileIcon');
+            if (profileIcon) {
+                try {
+                    // Load profile image from localStorage if available, keyed by username
+                    const savedProfileImage = localStorage.getItem(`profileImage_${username}`);
+                    if (savedProfileImage) {
+                        profileIcon.innerHTML = `<img src="${savedProfileImage}" alt="Profile Image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                        return;
+                    }
+                    const token = sessionStorage.getItem('authToken');
+                    if (!token) {
+                        profileIcon.textContent = username.charAt(0).toUpperCase();
+                        return;
+                    }
+                    const response = await fetch('/api/user-profile-image', {
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        }
+                    });
+                    if (!response.ok) {
+                        profileIcon.textContent = username.charAt(0).toUpperCase();
+                        return;
+                    }
+                    // Check if response body is empty before parsing JSON
+                    const text = await response.text();
+                    if (!text) {
+                        profileIcon.textContent = username.charAt(0).toUpperCase();
+                        return;
+                    }
+                    const data = JSON.parse(text);
+                    if (data.profileImageUrl) {
+                        profileIcon.innerHTML = `<img src="${data.profileImageUrl}" alt="Profile Image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                    } else {
+                        profileIcon.textContent = username.charAt(0).toUpperCase();
+                    }
+                } catch (error) {
+                    console.error('Error fetching profile image:', error);
+                    profileIcon.textContent = username.charAt(0).toUpperCase();
+                }
+            }
+        }
+
+        // Show or hide admin panel based on isAdmin flag
+        function updateAdminPanelVisibility() {
+        const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+        console.log('isAdmin flag:', isAdmin);
+        if (isAdmin) {
+            adminPanel.style.display = 'block';
+            // Show admin links in nav
+            document.getElementById('userMgmtLink').style.display = 'inline-block';
+            document.getElementById('scholarshipMgmtLink').style.display = 'inline-block';
+        } else {
+            adminPanel.style.display = 'none';
+            // Hide admin links in nav
+            document.getElementById('userMgmtLink').style.display = 'none';
+            document.getElementById('scholarshipMgmtLink').style.display = 'none';
+        }
+        }
+
+        // Logout button functionality
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.clear();
+            // Do not clear localStorage to preserve tracked scholarships
+            window.location.href = 'login.html';
+        });
+
+        // Load tracked scholarships on page load
+        loadTrackedScholarships();
+
+        document.getElementById('trackedListBtn').addEventListener('click', () => {
+            openTrackedListModal();
+        });
+
+        // When opening details from tracked list, pass true
+        trackedScholarshipsList.addEventListener('click', (event) => {
+            if (event.target.classList.contains('tracked-scholarship-link')) {
+                const title = event.target.textContent;
+                const scholarship = trackedScholarships.find(s => s.title === title);
+                if (scholarship) {
+                    openScholarshipDetails(scholarship, true);
+                }
+            }
+        });
+
+        document.getElementById('closeTrackedListBtn').addEventListener('click', () => {
+            closeTrackedListModal();
+        });
+
+        // Open tracked scholarships modal and render list
+        function openTrackedListModal() {
+            trackedListModal.style.display = 'block';
+            trackedListModal.setAttribute('aria-hidden', 'false');
+            renderTrackedScholarships();
+        }
+
+        // Close tracked scholarships modal
+        function closeTrackedListModal() {
+            trackedListModal.style.display = 'none';
+            trackedListModal.setAttribute('aria-hidden', 'true');
+        }
+
+        // Render tracked scholarships list in modal
+        function renderTrackedScholarships() {
+            trackedScholarshipsList.innerHTML = '';
+            if (trackedScholarships.length === 0) {
+                trackedScholarshipsList.innerHTML = '<li>No tracked scholarships.</li>';
+                return;
+            }
+            // Sort tracked scholarships alphabetically by title
+            trackedScholarships.sort((a, b) => {
+                const titleA = a.title ? a.title.toLowerCase() : '';
+                const titleB = b.title ? b.title.toLowerCase() : '';
+                if (titleA < titleB) return -1;
+                if (titleA > titleB) return 1;
+                return 0;
+            });
+            trackedScholarships.forEach(scholarship => {
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.alignItems = 'center';
+                li.style.padding = '0.5rem 0';
+
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = scholarship.title || 'Untitled Scholarship';
+                titleSpan.classList.add('tracked-scholarship-link');
+                titleSpan.addEventListener('click', () => {
+                    openScholarshipDetails(scholarship, true);
+                });
+
+                const untrackBtn = document.createElement('button');
+                untrackBtn.textContent = 'Untrack';
+                untrackBtn.className = 'untrack-btn';
+                untrackBtn.style.marginLeft = '1rem';
+                untrackBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    trackedScholarships = trackedScholarships.filter(s => s.id !== scholarship.id);
+                    saveTrackedScholarships();
+                    renderTrackedScholarships();
+                    displayScholarships(currentScholarships);
+                });
+
+                li.appendChild(titleSpan);
+                li.appendChild(untrackBtn);
+                trackedScholarshipsList.appendChild(li);
+            });
+            renderPaginationControls(Math.ceil(scholarshipsList.length / scholarshipsPerPage));
+        }
+
+        // Open scholarship details modal from tracked list or more info button
+function openScholarshipDetails(scholarship, fromTrackedList = false) {
+    if (!scholarship || !scholarship.title) {
+        // Do not show modal if scholarship is invalid or empty
+        return;
+    }
+    if (fromTrackedList) {
+        closeTrackedListModal();
+    }
+    openedFromTrackedList = fromTrackedList;
+    editingId = null;
+    document.getElementById('modalTitle').textContent = scholarship.title || '';
+
+    // Helper to set modal section text and visibility
+    function setModalSection(id, content, isHTML = false) {
+        const el = document.getElementById(id);
+        if (content && content.trim() !== '') {
+            if (isHTML) {
+                el.innerHTML = content;
+            } else {
+                el.textContent = content;
+            }
+            el.parentElement.style.display = '';
+        } else {
+            el.textContent = '';
+            el.parentElement.style.display = 'none';
+        }
+    }
+
+    setModalSection('modalInstructions', scholarship.instructions);
+
+    setModalSection('modalDescription', scholarship.description);
+
+    // Render benefits as table if possible
+    if (scholarship.benefits && scholarship.benefits.trim() !== '') {
+        const benefitItems = scholarship.benefits.split(/\r?\n|;/).map(item => item.trim()).filter(item => item.length > 0);
+        if (benefitItems.length > 1) {
+            let benefitTableHTML = '<table id="modalBenefitsTable"><thead><tr><th>Benefits</th></tr></thead><tbody>';
+            benefitItems.forEach(item => {
+                benefitTableHTML += `<tr><td>${item}</td></tr>`;
+            });
+            benefitTableHTML += '</tbody></table>';
+            setModalSection('modalBenefits', benefitTableHTML, true);
+        } else {
+            setModalSection('modalBenefits', scholarship.benefits);
+        }
+    } else {
+        setModalSection('modalBenefits', '');
+    }
+
+    // Render requirements as table if possible
+    if (scholarship.requirements && scholarship.requirements.trim() !== '') {
+        // Try to parse requirements as list items separated by newlines or semicolons
+        const reqItems = scholarship.requirements.split(/\r?\n|;/).map(item => item.trim()).filter(item => item.length > 0);
+        if (reqItems.length > 1) {
+            let reqTableHTML = '<table id="modalRequirementsTable"><thead><tr><th>Requirements</th></tr></thead><tbody>';
+            reqItems.forEach(item => {
+                reqTableHTML += `<tr><td>${item}</td></tr>`;
+            });
+            reqTableHTML += '</tbody></table>';
+            setModalSection('modalRequirements', reqTableHTML, true);
+        } else {
+            setModalSection('modalRequirements', scholarship.requirements);
+        }
+    } else {
+        setModalSection('modalRequirements', '');
+    }
+
+    // Render qualifications as table if possible
+    if (scholarship.qualifications && scholarship.qualifications.trim() !== '') {
+        const qualItems = scholarship.qualifications.split(/\r?\n|;/).map(item => item.trim()).filter(item => item.length > 0);
+        if (qualItems.length > 1) {
+            let qualTableHTML = '<table id="modalQualificationsTable"><thead><tr><th>Qualifications</th></tr></thead><tbody>';
+            qualItems.forEach(item => {
+                qualTableHTML += `<tr><td>${item}</td></tr>`;
+            });
+            qualTableHTML += '</tbody></table>';
+            setModalSection('modalQualifications', qualTableHTML, true);
+        } else {
+            setModalSection('modalQualifications', scholarship.qualifications);
+        }
+    } else {
+        setModalSection('modalQualifications', '');
+    }
+
+    setModalSection('modalLocation', scholarship.location);
+    const contactLink = document.getElementById('modalContact');
+    if (scholarship.contact && scholarship.contact.trim() !== '') {
+        contactLink.textContent = scholarship.contact;
+        contactLink.href = scholarship.contact;
+        contactLink.parentElement.style.display = '';
+    } else {
+        contactLink.textContent = '';
+        contactLink.href = '#';
+        contactLink.parentElement.style.display = 'none';
+    }
+
+    detailsModal.style.display = 'block';
+    detailsModal.setAttribute('aria-hidden', 'false');
+    backToTrackedListBtn.style.display = fromTrackedList ? 'inline-block' : 'none';
+}
+
+        // Close scholarship details modal
+        function closeModal() {
+            detailsModal.style.display = 'none';
+            detailsModal.setAttribute('aria-hidden', 'true');
+            backToTrackedListBtn.style.display = 'none';
+            openedFromTrackedList = false;
+        }
+
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            closeModal();
+        });
+
+        backToTrackedListBtn.addEventListener('click', () => {
+            closeModal();
+            openTrackedListModal();
+        });
+
+        // Load saved edits from localStorage and merge with scholarshipsData
+        function loadSavedEdits() {
+            const savedEditsJSON = localStorage.getItem('scholarindiEdits');
+            if (!savedEditsJSON) return;
+            const savedEdits = JSON.parse(savedEditsJSON);
+            scholarshipsData = scholarshipsData.map(sch => {
+                const edited = savedEdits.find(e => e.id === sch.id);
+                return edited ? {...sch, ...edited} : sch;
+            });
+        }
+
+        // Save edits to localStorage
+        function saveEdits() {
+            const edits = scholarshipsData.filter(sch => sch.isEdited);
+            localStorage.setItem('scholarindiEdits', JSON.stringify(edits));
+        }
+
+        // Toggle track scholarship
+        function isTracked(scholarshipId) {
+            return trackedScholarships.some(s => s.id === scholarshipId);
+        }
+
+        async function toggleTrackScholarship(scholarshipId) {
+            const currentlyTracked = isTracked(scholarshipId);
+            if (currentlyTracked) {
+                trackedScholarships = trackedScholarships.filter(s => s.id !== scholarshipId);
+            } else {
+                const trackedScholarship = scholarshipsData.find(s => s.id === scholarshipId);
+                if (trackedScholarship) trackedScholarships.push(trackedScholarship);
+            }
+            saveTrackedScholarships();
+            displayScholarships(currentScholarships);
+            renderTrackedScholarships();
+        }
+
+        // Start editing a scholarship
+        function startEdit(id) {
+            editingId = id;
+            displayScholarships(currentScholarships);
+        }
+
+        // Cancel editing
+        function cancelEdit() {
+            editingId = null;
+            displayScholarships(currentScholarships);
+        }
+
+        // Save scholarship edits
+        function saveScholarship(id) {
+            const titleInput = document.getElementById('editTitle');
+            const locationInput = document.getElementById('editLocation');
+            const descriptionInput = document.getElementById('editDescription');
+            const requirementsInput = document.getElementById('editRequirements');
+            const qualificationsInput = document.getElementById('editQualifications');
+            const typeInput = document.getElementById('editTypeOfScholarship');
+            const amountInput = document.getElementById('editAmount');
+            const contactInput = document.getElementById('editContact');
+            const instructionsInput = document.getElementById('editInstructions');
+
+            const scholarshipIndex = scholarshipsData.findIndex(sch => sch.id === id);
+            if (scholarshipIndex === -1) return;
+
+            scholarshipsData[scholarshipIndex] = {
+                ...scholarshipsData[scholarshipIndex],
+                title: titleInput.value.trim(),
+                location: locationInput.value.trim(),
+                description: descriptionInput.value.trim(),
+                requirements: requirementsInput.value.trim(),
+                qualifications: qualificationsInput.value.trim(),
+                typeOfScholarship: typeInput.value.trim(),
+                amount: parseInt(amountInput.value) || 0,
+                contact: contactInput.value.trim(),
+                instructions: instructionsInput.value.trim(),
+                isEdited: true
+            };
+
+            saveEdits();
+            editingId = null;
+            filterSortAndRenderScholarships();
+        }
+
+        function filterSortAndRenderScholarships() {
+            console.log('filterSortAndRenderScholarships called');
+            let filtered = [...scholarshipsData];
+            console.log('Initial scholarships count:', filtered.length);
+
+            if (isShowingRecommended) {
+                const recommendedIds = new Set(recommendedScholarships.map(s => s.id));
+                filtered = filtered.filter(sch => recommendedIds.has(sch.id));
+                console.log('Filtered recommended scholarships count:', filtered.length);
+            }
+
+            const normalize = (str) => str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g," ");
+
+            const searchTerm = normalize(searchInput.value.trim());
+            if (searchTerm) {
+                filtered = filtered.filter(s => {
+                    const title = s.title ? normalize(s.title) : '';
+                    const description = s.description ? normalize(s.description) : '';
+                    return title.includes(searchTerm) || description.includes(searchTerm);
+                });
+                console.log('Filtered by search term count:', filtered.length);
+            }
+
+            const scholarshipTypeFilterValue = filterScholarshipType.value;
+            if (scholarshipTypeFilterValue) {
+                filtered = filtered.filter(s => {
+                    const amountStr = s.amount ? s.amount.toString().toLowerCase() : '';
+                    const descriptionStr = s.description ? s.description.toLowerCase() : '';
+                    if (scholarshipTypeFilterValue === 'full') {
+                        return amountStr.includes('full tuition') || descriptionStr.includes('full scholarship');
+                    } else if (scholarshipTypeFilterValue === 'partial') {
+                        return amountStr.includes('partial') || descriptionStr.includes('partial scholarship') || amountStr.includes('varies');
+                    } else if (scholarshipTypeFilterValue === 'stipend') {
+                        return amountStr.includes('allowance') || amountStr.includes('stipend') || descriptionStr.includes('stipend');
+                    }
+                    return true;
+                });
+                console.log('Filtered by scholarship type count:', filtered.length);
+            }
+
+            const providerFilterValue = filterProvider.value;
+            if (providerFilterValue) {
+                filtered = filtered.filter(s => s.category && s.category.toLowerCase() === providerFilterValue.toLowerCase());
+                console.log('Filtered by provider count:', filtered.length);
+            }
+
+            const sortBy = sortSelect.value;
+            if (sortBy === 'title') {
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (sortBy === 'amount') {
+                filtered.sort((a, b) => {
+                    const amountA = typeof a.amount === 'number' ? a.amount : Number.MAX_SAFE_INTEGER;
+                    const amountB = typeof b.amount === 'number' ? b.amount : Number.MAX_SAFE_INTEGER;
+                    return amountA - amountB;
+                });
+            } else if (sortBy === 'deadline') {
+                filtered.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+            }
+
+            currentScholarships = filtered;
+            displayScholarships(currentScholarships);
+        }
+
+        function displayScholarships(scholarshipsList) {
+            console.log('Displaying scholarships count:', scholarshipsList.length);
+            resultsContainer.innerHTML = '';
+            if (scholarshipsList.length === 0) {
+                console.log('No scholarships available to display.');
+                resultsContainer.innerHTML = '<p>No scholarships available at this time.</p>';
+                paginationContainer.innerHTML = '';
+                paginationContainerTop.innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(scholarshipsList.length / scholarshipsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages || 1;
+
+            const startIndex = (currentPage - 1) * scholarshipsPerPage;
+            const endIndex = startIndex + scholarshipsPerPage;
+            const scholarshipsToShow = scholarshipsList.slice(startIndex, endIndex);
+
+            scholarshipsToShow.forEach(scholarship => {
+                const card = document.createElement('div');
+                card.className = 'scholarship-card scholarship-card-animate';
+
+                // Set background image if available, else use default background image
+                card.innerHTML = '';
+
+                if (scholarship.backgroundImage && scholarship.backgroundImage.trim() !== '') {
+                    card.style.backgroundImage = `url('${scholarship.backgroundImage}')`;
+                } else {
+                    card.style.backgroundImage = `url('../Images/Scholarships.png')`;
+                }
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'scholarship-card-content';
+
+                void card.offsetWidth;
+
+                if (editingId === scholarship.id) {
+                    card.appendChild(contentDiv);
+
+                    const inputTitle = document.createElement('input');
+                    inputTitle.type = 'text';
+                    inputTitle.id = 'editTitle';
+                    inputTitle.className = 'edit-input';
+                    inputTitle.placeholder = 'Title';
+                    inputTitle.value = scholarship.title || '';
+                    contentDiv.appendChild(inputTitle);
+
+                    const inputLocation = document.createElement('input');
+                    inputLocation.type = 'text';
+                    inputLocation.id = 'editLocation';
+                    inputLocation.className = 'edit-input';
+                    inputLocation.placeholder = 'Location';
+                    inputLocation.value = scholarship.location || '';
+                    contentDiv.appendChild(inputLocation);
+
+                    const textareaDescription = document.createElement('textarea');
+                    textareaDescription.id = 'editDescription';
+                    textareaDescription.className = 'edit-textarea';
+                    textareaDescription.placeholder = 'Description';
+                    textareaDescription.value = scholarship.description || '';
+                    contentDiv.appendChild(textareaDescription);
+
+                    const textareaRequirements = document.createElement('textarea');
+                    textareaRequirements.id = 'editRequirements';
+                    textareaRequirements.className = 'edit-textarea';
+                    textareaRequirements.placeholder = 'Requirements';
+                    textareaRequirements.value = scholarship.requirements || '';
+                    contentDiv.appendChild(textareaRequirements);
+
+                    const textareaQualifications = document.createElement('textarea');
+                    textareaQualifications.id = 'editQualifications';
+                    textareaQualifications.className = 'edit-textarea';
+                    textareaQualifications.placeholder = 'Qualifications';
+                    textareaQualifications.value = scholarship.qualifications || '';
+                    contentDiv.appendChild(textareaQualifications);
+
+                    const inputTypeOfScholarship = document.createElement('input');
+                    inputTypeOfScholarship.type = 'text';
+                    inputTypeOfScholarship.id = 'editTypeOfScholarship';
+                    inputTypeOfScholarship.className = 'edit-input';
+                    inputTypeOfScholarship.placeholder = 'Type of Scholarship';
+                    inputTypeOfScholarship.value = scholarship.typeOfScholarship || '';
+                    contentDiv.appendChild(inputTypeOfScholarship);
+
+                    const inputAmount = document.createElement('input');
+                    inputAmount.type = 'number';
+                    inputAmount.id = 'editAmount';
+                    inputAmount.className = 'edit-input';
+                    inputAmount.placeholder = 'Amount';
+                    inputAmount.value = scholarship.amount || 0;
+                    contentDiv.appendChild(inputAmount);
+
+                    const inputContact = document.createElement('input');
+                    inputContact.type = 'text';
+                    inputContact.id = 'editContact';
+                    inputContact.className = 'edit-input';
+                    inputContact.placeholder = 'Contact';
+                    inputContact.value = scholarship.contact || '';
+                    contentDiv.appendChild(inputContact);
+
+                    const textareaInstructions = document.createElement('textarea');
+                    textareaInstructions.id = 'editInstructions';
+                    textareaInstructions.className = 'edit-textarea';
+                    textareaInstructions.placeholder = 'Instructions';
+                    textareaInstructions.value = scholarship.instructions || '';
+                    contentDiv.appendChild(textareaInstructions);
+
+                    const saveBtn = document.createElement('button');
+                    saveBtn.className = 'save-btn';
+                    saveBtn.textContent = 'Save';
+                    saveBtn.addEventListener('click', () => saveScholarship(scholarship.id));
+                    contentDiv.appendChild(saveBtn);
+
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.className = 'save-btn';
+                    cancelBtn.style.backgroundColor = '#d64545';
+                    cancelBtn.style.marginLeft = '8px';
+                    cancelBtn.textContent = 'Cancel';
+                    cancelBtn.addEventListener('click', cancelEdit);
+                    contentDiv.appendChild(cancelBtn);
+                } else {
+                    // Render scholarship card when not editing
+                    card.appendChild(contentDiv);
+                    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+
+                    const fullDescription = scholarship.description || '';
+                    const maxLength = 170; // Approximate length for 6 lines, adjust as needed
+
+                    const descParagraph = document.createElement('p');
+                    descParagraph.className = 'scholarship-description';
+
+                    if (fullDescription.length > maxLength) {
+                        const truncatedText = fullDescription.slice(0, maxLength).trim();
+
+                        // Find last space to avoid cutting in the middle of a word
+                        const lastSpaceIndex = truncatedText.lastIndexOf(' ');
+                        const displayText = truncatedText.slice(0, lastSpaceIndex);
+
+                        descParagraph.textContent = displayText + ' ... ';
+
+                        const seeMoreLink = document.createElement('a');
+                        seeMoreLink.href = '#';
+                        seeMoreLink.textContent = 'See more';
+                        seeMoreLink.style.color = '#2563eb';
+                        seeMoreLink.style.cursor = 'pointer';
+                        seeMoreLink.style.marginLeft = '0.5rem';
+
+                        seeMoreLink.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            if (seeMoreLink.textContent === 'See more') {
+                                descParagraph.textContent = fullDescription + ' ';
+                                seeMoreLink.textContent = 'See less';
+                                descParagraph.appendChild(seeMoreLink);
+                            } else {
+                                descParagraph.textContent = displayText + ' ... ';
+                                seeMoreLink.textContent = 'See more';
+                                descParagraph.appendChild(seeMoreLink);
+                            }
+                        });
+
+                        descParagraph.appendChild(seeMoreLink);
+                    } else {
+                        descParagraph.textContent = fullDescription;
+                    }
+
+                    // Determine if scholarship has a unique background image
+                    const hasBackgroundImage = scholarship.backgroundImage && scholarship.backgroundImage.trim() !== '';
+
+                    // If has background image, make title invisible but present, and adjust description margin
+                    if (hasBackgroundImage) {
+                    contentDiv.innerHTML = `
+                            <!-- <h3 style="visibility: hidden; margin: 0; padding: 0; position: absolute; width: 100%; height: 1.2em;">${scholarship.title || ''}</h3> -->
+                            <h3>${scholarship.title || ''}</h3>
+                            <p style="margin-top: 0;">${scholarship.location || ''}</p>
+                            <div class="scholarship-card-buttons">
+                                ${isAdmin ? '<button class="edit-btn">Edit</button>' : ''}
+                                <button class="more-info-btn">More info</button>
+                                <button class="track-btn">${isTracked(scholarship.id) ? 'Untrack' : 'Track'}</button>
+                            </div>
+                        `;
+                    } else {
+                    contentDiv.innerHTML = `
+                            <h3>${scholarship.title || ''}</h3>
+                            <p>${scholarship.location || ''}</p>
+                            <div class="scholarship-card-buttons">
+                                ${isAdmin ? '<button class="edit-btn">Edit</button>' : ''}
+                                <button class="more-info-btn">More info</button>
+                                <button class="track-btn">${isTracked(scholarship.id) ? 'Untrack' : 'Track'}</button>
+                            </div>
+                        `;
+                    }
+
+                    contentDiv.insertBefore(descParagraph, contentDiv.querySelector('p'));
+
+                    if (isAdmin) {
+                        const editBtn = contentDiv.querySelector('.edit-btn');
+                        if (editBtn) {
+                            editBtn.addEventListener('click', () => startEdit(scholarship.id));
+                        }
+                    }
+                    const trackBtn = contentDiv.querySelector('.track-btn');
+                    trackBtn.addEventListener('click', () => toggleTrackScholarship(scholarship.id));
+                    const moreInfoBtn = contentDiv.querySelector('.more-info-btn');
+                    moreInfoBtn.addEventListener('click', () => openScholarshipDetails(scholarship, false));
+                }
+                resultsContainer.appendChild(card);
+            });
+
+            if (totalPages > 1) {
+                renderPaginationControls(totalPages);
+                paginationContainer.style.display = 'flex';
+                paginationContainerTop.style.display = 'flex';
+                console.log('Pagination containers set to visible');
+            } else {
+                paginationContainer.innerHTML = '';
+                paginationContainerTop.innerHTML = '';
+                paginationContainer.style.display = 'none';
+                paginationContainerTop.style.display = 'none';
+                console.log('Pagination containers hidden due to single page');
+            }
+        }
+
+
+        function renderPaginationControls(totalPages) {
+            console.log('Rendering pagination controls for total pages:', totalPages);
+            paginationContainer.innerHTML = '';
+            paginationContainerTop.innerHTML = '';
+            console.log('Cleared pagination containers');
+
+            // Set pagination container background to transparent
+            paginationContainer.style.backgroundColor = 'transparent';
+            paginationContainerTop.style.backgroundColor = 'transparent';
+
+            paginationContainer.style.display = 'flex';
+            paginationContainerTop.style.display = 'flex';
+
+            const createPageButton = (text, disabled, onClick) => {
+                const btn = document.createElement('button');
+                btn.textContent = text;
+                btn.disabled = disabled;
+                btn.style.cursor = disabled ? 'default' : 'pointer';
+                btn.className = 'pagination-btn';
+                btn.addEventListener('click', onClick);
+                console.log(`Created pagination button: ${text}, disabled: ${disabled}`);
+                return btn;
+            };
+
+            const prevBtnHandler = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayScholarships(currentScholarships);
+                    renderPaginationControls(totalPages);
+                }
+            };
+
+            const nextBtnHandler = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayScholarships(currentScholarships);
+                    renderPaginationControls(totalPages);
+                }
+            };
+
+            const prevBtn = createPageButton('Previous', currentPage === 1, prevBtnHandler);
+            const prevBtnTop = createPageButton('Previous', currentPage === 1, prevBtnHandler);
+            paginationContainer.appendChild(prevBtn);
+            paginationContainerTop.appendChild(prevBtnTop);
+            console.log('Appended Previous buttons to both pagination containers');
+
+            // Calculate startPage and endPage to always show max 3 page buttons
+            let startPage, endPage;
+            if (totalPages <= 3) {
+                startPage = 1;
+                endPage = totalPages;
+            } else {
+                if (currentPage === 1) {
+                    startPage = 1;
+                    endPage = 3;
+                } else if (currentPage === totalPages) {
+                    startPage = totalPages - 2;
+                    endPage = totalPages;
+                } else {
+                    startPage = currentPage - 1;
+                    endPage = currentPage + 1;
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtnHandler = () => {
+                    if (i !== currentPage) {
+                        currentPage = i;
+                        displayScholarships(currentScholarships);
+                        renderPaginationControls(totalPages);
+                    }
+                };
+                const pageBtn = createPageButton(i, i === currentPage, pageBtnHandler);
+                const pageBtnTop = createPageButton(i, i === currentPage, pageBtnHandler);
+                paginationContainer.appendChild(pageBtn);
+                paginationContainerTop.appendChild(pageBtnTop);
+                console.log(`Appended page button ${i} to both pagination containers`);
+            }
+
+            const nextBtn = createPageButton('Next', currentPage === totalPages, nextBtnHandler);
+            const nextBtnTop = createPageButton('Next', currentPage === totalPages, nextBtnHandler);
+            paginationContainer.appendChild(nextBtn);
+            paginationContainerTop.appendChild(nextBtnTop);
+            console.log('Appended Next buttons to both pagination containers');
+        }
+
+        // Initial load
+        updateUsernameDisplay();
+        updateAdminPanelVisibility();
+        loadSavedEdits();
+        filterSortAndRenderScholarships();
+
+        // Event listeners for controls
+        searchButton.addEventListener('click', () => {
+            filterSortAndRenderScholarships();
+        });
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        searchInput.addEventListener('input', debounce(() => {
+            if (searchInput.value.trim().length >= 3) {
+                filterSortAndRenderScholarships();
+            }
+        }, 200));
+
+        searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                filterSortAndRenderScholarships();
+            }
+        });
+
+        sortSelect.addEventListener('change', () => {
+            filterSortAndRenderScholarships();
+        });
+
+        filterScholarshipType.addEventListener('change', () => {
+            filterSortAndRenderScholarships();
+        });
+
+        filterProvider.addEventListener('change', () => {
+            filterSortAndRenderScholarships();
+        });
+
+        clearFiltersBtn.addEventListener('click', () => {
+            isShowingRecommended = false;
+            recommendedHeaderBtn.textContent = 'Recommended for You';
+            recommendedHeaderBtn.classList.remove('active');
+            filterScholarshipType.value = '';
+            filterProvider.value = '';
+            sortSelect.value = 'title';
+            filterSortAndRenderScholarships();
+        });
+
+        recommendedHeaderBtn.addEventListener('click', () => {
+            isShowingRecommended = !isShowingRecommended;
+            if (isShowingRecommended) {
+                recommendedHeaderBtn.textContent = 'Show All';
+                recommendedHeaderBtn.classList.add('active');
+            } else {
+                recommendedHeaderBtn.textContent = 'Recommended for You';
+                recommendedHeaderBtn.classList.remove('active');
+            }
+            currentPage = 1;
+            filterSortAndRenderScholarships();
+        });
+
+        // Initial load
+        filterSortAndRenderScholarships();
+    </script>
+</body>
+</html>
